@@ -56,5 +56,11 @@
 	<class name="actuator_control" type="mavplugin::ActuatorControlPlugin" base_class_type="mavplugin::MavRosPlugin">
 		<description>Send direct controls values to the actuators</description>
 	</class>
+        <!--<newly write chg--> 
+        <!--
+        <class name="new_message" type="mavplugin::NewPlugin" base_class_type="mavplugin::MavRosPlugin">
+		<description>New message added</description>  
+	</class>  -->
+        
 </library>
 

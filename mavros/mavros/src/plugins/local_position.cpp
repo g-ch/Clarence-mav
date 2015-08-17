@@ -60,6 +60,7 @@ private:
 	UAS *uas;
 
 	ros::Publisher local_position;
+    ros::Publisher local_position_speed_linear;//2321323121
 
 	std::string frame_id;		//!< frame for Pose
 	std::string tf_frame_id;	//!< origin for TF
@@ -70,18 +71,29 @@ private:
 		mavlink_local_position_ned_t pos_ned;
 		mavlink_msg_local_position_ned_decode(msg, &pos_ned);
 
-		auto position = UAS::transform_frame_ned_enu(Eigen::Vector3d(pos_ned.x, pos_ned.y, pos_ned.z));
-		auto orientation = uas->get_attitude_orientation();
+        //修改版
+        auto position = UAS::transform_frame_ned_enu(Eigen::Vector3d(pos_ned.vx, pos_ned.vy, pos_ned.vz));
+        //auto position = UAS::transform_frame_ned_enu(Eigen::Vector3d(pos_ned.x, pos_ned.y, pos_ned.z));
+
+        auto orientation = uas->get_attitude_orientation();
 
         auto pose = boost::make_shared<geometry_msgs::PoseStamped>();
 
 		pose->header = uas->synchronized_header(frame_id, pos_ned.time_boot_ms);
 
-		tf::pointEigenToMsg(position, pose->pose.position);
-		pose->pose.orientation = orientation;
+        tf::pointEigenToMsg(position, pose->pose.position);
+        pose->pose.orientation = orientation;
 
 		local_position.publish(pose);
 
+        //自己写的。。
+       /* auto speed_linear = UAS::transform_frame_ned_enu(Eigen::Vector3d(pos_ned.vx, pos_ned.vy, pos_ned.vz));
+        auto speed =  boost::make_shared<geometry_msgs::PoseStamped>();
+        speed->header = uas->synchronized_header(frame_id, pos_ned.time_boot_ms);
+        tf::pointEigenToMsg(speed_linear,pose->pose.position);
+
+        local_position_speed_linear.publish(speed_linear);*/
+        //到这里没了
 		if (tf_send) {
 			geometry_msgs::TransformStamped transform;
 
